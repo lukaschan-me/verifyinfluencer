@@ -25,7 +25,7 @@ export default function Admin() {
     productCount: 9,
     isIncludeRevenueAnalyze: false,
     isVerifyWithJournals: true,
-    journals: [],
+    journals: journals,
     notes: "",
   });
 
@@ -73,27 +73,21 @@ export default function Admin() {
       isVerifyWithJournals: value,
     });
   };
-  const handleJournalsChange = (value: string[]) => {
+  const handleJournalsChange = (value: string) => {
+    const values = query.journals.includes(value)
+      ? query.journals.filter((journal) => journal !== value)
+      : [...query.journals, value];
     setQuery({
       ...query,
-      journals: value,
+      journals: values,
     });
+    console.log(query.journals);
   };
   const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setQuery({
       ...query,
       notes: e.target.value,
     });
-  };
-
-  const [selectedJournals, setSelectedJournals] = useState<string[]>([]);
-
-  const toggleJournal = (journal: string) => {
-    setSelectedJournals((prev) =>
-      prev.includes(journal)
-        ? prev.filter((j) => j !== journal)
-        : [...prev, journal]
-    );
   };
 
   const _renderResearchConfigurationForm = () => {
@@ -276,14 +270,14 @@ export default function Admin() {
           {journals.map((journal, index) => (
             <div
               key={index}
-              onClick={() => toggleJournal(journal)}
+              onClick={() => handleJournalsChange(journal)}
               className="border border-white rounded-md p-4 hover:bg-green-900 hover:border-green-900 hover:cursor-pointer"
             >
               <div className="flex justify-between items-center">
                 <p>{journal}</p>
                 <div
                   className={`rounded-full w-5 h-5 min-w-5 min-h-5 ${
-                    selectedJournals.includes(journal)
+                    query.journals.includes(journal)
                       ? "bg-green-600"
                       : "bg-transparent border-2 border-white"
                   }`}
